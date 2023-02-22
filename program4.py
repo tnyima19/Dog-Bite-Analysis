@@ -7,12 +7,12 @@ from datetime import datetime
 import pandas as pd
 
 def capitalize(dog_name):
+    """capitalize names of dogs if it is provieded,
+    else return Name not provided"""
     dog_name = str(dog_name)
-    if dog_name == "nan" or dog_name == "NAME NOT PROVIDED":
+    if dog_name in ("nan", "NAME NOT PROVIDED"):
         return "Name not provided"
-    else:
-        #print(dog_name, type(dog_name))
-        return dog_name.title()
+    return dog_name.title()
 
 def make_dog_df(license_file, zipcode_file):
     """The function opens two inputted files, the first with
@@ -117,28 +117,6 @@ def clean_breed(breed_str):
         return "Unknown"
     return breed_str.title()
 
-def filterdate(date_str):
-   for format in ('%m/%d/%Y', '%B %d %Y'):
-        try:
-            #print(type(date_str))
-            curr_date = datetime.strptime(date_str, format)
-            new_date = curr_date.strftime('%Y-%m-%d')
-            #new_date = str(new_date)
-            return new_date
-        except ValueError:
-            pass
-
-def getmonth(date):
-    """return month from teh date"""
-    date = datetime.strptime(date, '%Y-%m-%d').date()
-    return str(date.month)
-
-def getweekday(date_str):
-    """return day of the week from the date"""
-    date = datetime.strptime(date_str, '%Y-%m-%d').date()
-    #print(date.weekday())
-    return str(date.weekday())
-
 def parse_datetime(df, column='LicenseIssuedDate'):
     """return df with 3 additional columns
     timestamp: contains the datetime object correspinding to
@@ -152,51 +130,5 @@ def parse_datetime(df, column='LicenseIssuedDate'):
     df['timestamp']= pd.to_datetime(df[column])
     #print(dates)
     df['month'] = df['timestamp'].dt.month
-    df['days_of_week'] = df['timestamp'].dt.day_of_week
-    #df['timestamp'] = df[column].apply(filterdate)
-    #df['month'] = df['timestamp'].apply(getmonth)
-    #df['day_of_week']= df['timestamp'].apply(getweekday)
-    #df.assign(timestamp=dates, month = months, day_of_week = days_of_week)
-    #print(df)
+    df['day_of_week'] = df['timestamp'].dt.day_of_week
     return df
-
-# def main():
-#        dog_df = make_dog_df("NYC_Dog_Licensing_Dataset_2021.csv",
-#                             "nyc_zip_borough_neighborhoods_pop.csv")
-#        print(dog_df)
-#        dog_df = parse_datetime(dog_df)
-#        print(dog_df)
-#     print('Most popular names are:')
-#     print(dog_df['AnimalName'].value_counts()[:10])
-#     import seaborn as sns
-#     import matplotlib.pyplot as plt
-#     #sns.histplot(data=dog_df, x="Borough")
-#     #plt.title('Dog Bites, 2021')
-#     #plt.show()
-#     bite_df = make_bite_df("DOHMH_Dog_Bite_Data_2021.csv")
-#     print(bite_df)
-#     #sns.histplot(data=bite_df, x="Borough")
-#     #plt.show()
-#     df_drop = bite_df.dropna()
-#     print(f'The full DataFrame has {len(bite_df)} entries.')
-#     print(f'Dropping undefined values leaves {len(df_drop)} entries.')
-#     bite_df['Age Num'] = bite_df['Age'].apply(clean_age)
-#     print(bite_df[['Age','Age Num']])
-#     bite_df['Breed'] = bite_df['Breed'].apply(clean_breed)
-#     print(bite_df)
-#     bite_df = impute_age(bite_df)
-#     bite_df['ZipCode'] = bite_df.apply(lambda row:
-# impute_zip(row['Borough'],row['ZipCode']),axis=1)
-#     print(bite_df)
-#     bite_df = parse_datetime(bite_df,column='DateOfBite')
-#     print(bite_df)
-#     sns.histplot(data=bite_df, x="month",discrete=True)
-#     plt.xticks(range(1,13),
-#     ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'])
-#     plt.title('Dog Bites, 2021')
-#     plt.show()
-#     sns.histplot(data=bite_df, x="day_of_week")
-#     plt.xticks(range(7),['Mon','Tue','Wed','Thu','Fri','Sat','Sun'])
-#     plt.title('Dog Bites, 2021')
-#     plt.show()
-#main()
